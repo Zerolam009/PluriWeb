@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Foo-lab Pluriscore Prediction</title>
+    <style>
+        .card {
+            background-color: white;
+            border: 1.5px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            transition: 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        }
+
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background-image: url("{{ url_for('static', filename='Human_induced_pluripotent_stem_cell_BG.JPEG') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .logo {
+            float: right;
+            width: 120px;         /* adjust size as needed */
+            height: auto;
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+
+        
+        .container {
+            font-family: Arial, sans-serif;
+            max-width: 95%;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+    
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #333;
+        }
+    
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+    
+        .result {
+            margin-top: 30px;
+            background: #f2f2f2;
+            padding: 15px;
+            border-radius: 6px;
+        }
+    
+        table {
+            border-collapse: collapse;
+            margin-top: 15px;
+            width: 100%;
+        }
+    
+        th {
+            background-color: #007BFF;
+            color: white;
+            text-align: left;
+        }
+    
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+    
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+
+
+</head>
+<body>
+    <style>
+        body {
+            background-image: url('{{ url_for('static', filename='Human_induced_pluripotent_stem_cell_BG.JPG') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 80vh;
+        }
+    </style>
+</body>
+
+<div class="container">
+    <img src="{{ url_for('static', filename='Foo_lab.png') }}" alt="Foo Lab Logo" class="logo">
+
+    <h1>Foo-lab Pluriscore Prediction</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv,.tsv,.txt,.xlsx" required>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if result %}
+    <div class="card">
+        <h2>Prediction Results</h2>
+        <table border="1" cellspacing="0" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Sample</th>
+                    <th>Endoscore</th>
+                    <th>Mesoscore</th>
+                    <th>Ectoscore</th>
+                    <th>Pluriscore</th>
+                    <th>Confidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sample, scores in result.items() %}
+                <tr>
+                    <td>{{ sample }}</td>
+                    <td>{{ scores.endoscore }}</td>
+                    <td>{{ scores.mesoscore }}</td>
+                    <td>{{ scores.ectoscore }}</td>
+                    <td>{{ scores.pluriscore }}</td>
+                    <td>{{ scores.confidence }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if result_file %}
+        <p style="margin-top: 20px;">
+            <a href="{{ url_for('static', filename='outputs/' ~ result_file) }}" download>
+                ⬇ Download full result (.xlsx)
+            </a>
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if bar_img is defined and bar_img %}
+        <div class="card">
+            <h3>Score Breakdown (Bar Plot)</h3>
+            <img src="data:image/png;base64,{{ bar_img }}" style="max-width: 100%;">
+            {% if bar_file %}
+                <p><a href="{{ url_for('static', filename='plots/' ~ bar_file) }}" download>⬇ Download Bar Plot</a></p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if jitter_img is defined and jitter_img %}
+        <div class="card">
+            <h3>Score Distribution</h3>
+            <img src="data:image/png;base64,{{ jitter_img }}" style="max-width: 100%;">
+            {% if jitter_file %}
+                <p><a href="{{ url_for('static', filename='plots/' ~ jitter_file) }}" download>⬇ Download Jitter Plot</a></p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div> <!-- close .container -->
+
+</html>
+
